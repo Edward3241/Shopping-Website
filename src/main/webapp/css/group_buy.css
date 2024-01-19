@@ -1,0 +1,129 @@
+
+/* 新增的部分，用來水平對齊推薦商品 */
+.recommended-products {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.product {
+    text-align: center;
+    transition: transform 0.3s ease-in-out; /* 添加過渡效果，使變化更平滑 */
+    margin: 0 100px; /* 設置左右間距，調整此值以適應你的設計需求 */
+
+}
+
+.product img {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 2px solid transparent;
+    border-image: linear-gradient(to right, #3498db, #2980b9);
+    border-image-slice: 1;
+    border-radius: 8px;
+}
+
+.product:hover img {
+    transform: scale(1.1); /* 滑鼠懸停時放大到1.1倍 */
+}
+
+
+/* 在你的 CSS 樣式表中（styles.css） */
+
+.navbar {
+    background-color: #ffc0cb;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    color: white;
+}
+
+.navbar-scrolled {
+    background-color: #ffb6c1 !important;
+}
+
+/* 將 Navbar 中除了 navbar-brand 以外的項目置右 */
+.navbar-nav {
+    margin-left: auto;
+}
+
+
+
+
+/* maim.jsp 中的 D_bHY , D_bHZ , D_bIa  圖片icon  */
+
+/* 水平對齊圖標和文字 */
+.D_bHY {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* 單個項目樣式 */
+.D_bHZ {
+    text-align: center;
+}
+
+/* 內容項目水平對齊 */
+.D_bIa {
+    margin: 0 auto;
+}
+
+
+/* 圖片icon 標題 */
+
+.D_bvs {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.text-container {
+    display: flex;
+    align-items: center;
+}
+
+.D_bvl {
+    margin: 0;
+}
+
+.D_bvw {
+    margin-left: 1000px; /* 調整左右兩側的間距 */
+}
+
+		/* 輪播畫面 */
+		
+		#travelTheme .slick-prev:before,
+		        #travelTheme .slick-next:before {
+		            color: #F24503;
+		            font-size: 3rem;
+		        }
+
+        #travelTheme .travelThemeSlider {
+            width: 90%;
+        }
+
+        #travelTheme .slick-slide {
+            margin: 0px 1rem;
+        }
+
+        #travelTheme .slick-slide img {
+            width: 100%;
+            border-radius: 10px;
+        }
+
+        #travelTheme .travelThemeH1 {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        #travelTheme div {
+            margin: 10px 0px;
+        }
+
+        #travelTheme img :hover {
+            opacity: 0.7;
+            border-radius: 50px !important;
+        }
+
+}
+
+
