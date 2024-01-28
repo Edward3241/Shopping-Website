@@ -95,4 +95,9 @@ public interface GroupBuyDao {
 // 15. 為 cart 注入 cartItem	
 	void enrichCartWithDetails(Cart cart);
 	
+// 16. 導出功能
+//	List<Cart> getOrderHistory(User user);
+	
+//// 17. Github 登入
+//  Optional<User> findByUsername(String username);
 }

@@ -116,8 +116,11 @@
     
     <!-- 定義攔截器 Bean -->
     <bean id="loginInterceptor" class="spring.mvc.group_buy.interceptor.LoginInterceptor"/>
+    
+    
 
-    <!-- 配置攔截器 -->
+
+    <!-- 配置攔截器     -->
     <mvc:interceptors>
         <mvc:interceptor>
             <mvc:mapping path="/group_buy/**"/>
@@ -128,4 +131,5 @@
             <bean class="spring.mvc.group_buy.interceptor.LoginInterceptor"/>
         </mvc:interceptor>
     </mvc:interceptors>
+
 </beans>

@@ -23,6 +23,8 @@
 		<%@include file="../menu.jspf" %>
 		
 		<div style="padding: 15px">
+		 <div class="card">
+            <div class="card-body">
 			<form method="post" action="./deleteToCart" class="row g-3 needs-validation" novalidate>
 				<fieldset>
 					<legend>團購網 - 商品刪除</legend>

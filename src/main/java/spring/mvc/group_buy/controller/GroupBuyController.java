@@ -6,7 +6,9 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Enumeration;
@@ -24,6 +26,9 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +38,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.opencsv.CSVWriter;
+
+//import com.opencsv.CSVWriter;
 
 import spring.mvc.group_buy.model.dao.GroupBuyDao;
 import spring.mvc.group_buy.model.entity.Cart;
@@ -40,6 +50,7 @@ import spring.mvc.group_buy.model.entity.CartItem;
 import spring.mvc.group_buy.model.entity.Product;
 import spring.mvc.group_buy.model.entity.User;
 import spring.mvc.group_buy.util.KeyUtil;
+import spring.mvc.group_buy.util.OAuth2Util;
 
 @Controller
 @RequestMapping("/group_buy")
@@ -51,6 +62,35 @@ public class GroupBuyController {
 	@Value("${units}")
 	private String[] units;
 	
+	
+	
+	
+//	@GetMapping("/util/OAuth2Util")
+//	public String githubLogin() {
+//	    // 向 Github 驗證授權
+//	    String auth = OAuth2Util.AUTH_URL;
+//
+//	    // 從資料庫或其他來源獲取使用者名稱
+//	    String username = getUsernameFromDao();  // 使用 DAO 獲取使用者名稱
+//	    if (username == null) {
+//	        // 在這裡處理錯誤，例如拋出異常或返回錯誤信息
+//	        throw new IllegalArgumentException("Username cannot be null");
+//	    }
+//
+//	    // 進行重定向
+//	    return "redirect:" + auth;
+//	}
+//
+//	// 使用 DAO 獲取使用者名稱的方法
+//	private String getUsernameFromDao() {
+//	    // 使用你的 DAO 方法來獲取使用者名稱
+//	    // 這裡僅僅是一個示例，實際上要根據你的 DAO 接口進行調整
+//	    Optional<User> user = dao.findUserById(userId).get(); // 假設你有一個 findUserById 方法
+//
+//	    return user.map(User::getUsername).orElse(null);
+//	}
+
+
 	@GetMapping("/getcode")
 	private void getCodeImage(HttpSession session, HttpServletResponse response) throws IOException {
 		// 產生一個驗證碼 code
@@ -69,7 +109,7 @@ public class GroupBuyController {
 		// 2. 建立畫布
 		Graphics g = img.getGraphics();
 		// 3. 設定顏色
-		g.setColor(Color.YELLOW);
+		g.setColor(Color.GREEN);
 		// 4. 塗滿背景
 		g.fillRect(0, 0, 80, 30);
 		// 5. 設定顏色
@@ -79,7 +119,7 @@ public class GroupBuyController {
 		// 7. 繪字串
 		g.drawString(code, 10, 23); // code, x, y
 		// 8. 干擾線
-		g.setColor(Color.RED);
+		g.setColor(Color.BLUE);
 		for(int i=0;i<10;i++) {
 			int x1 = random.nextInt(80);
 			int y1 = random.nextInt(30);
@@ -101,27 +141,29 @@ public class GroupBuyController {
 		return "group_buy/login";
 	}
 	
+	// % search search % %=任意資源
+	
 	// 前台登入處理
-	@PostMapping("/login")
-	public String login(@RequestParam("username") String username,  //帶了username這個參數
+	@PostMapping("/login") //我會導到login頁面
+	public String login(@RequestParam("username") String username,  //接收jsp login中的3個參數 帶了username這個參數
 						 @RequestParam("password") String password,
 						 @RequestParam("code") String code,
 						HttpSession session, Model model) throws Exception { //session存储和获取与用户会话相关的信息 , model傳遞資料 給jsp 
 		// 比對驗證碼
-		if(!code.equals(session.getAttribute("code")+"")) {
-			session.invalidate(); // session 過期失效
-			model.addAttribute("loginMessage", "驗證碼錯誤");
-			return "group_buy/login";
-		}
+//		if(!code.equals(session.getAttribute("code")+"")) {
+//			session.invalidate(); // session 過期失效
+//			model.addAttribute("loginMessage", "驗證碼錯誤");
+//			return "group_buy/login";
+//		}
 		// 根據 username 查找 user 物件
 		Optional<User> userOpt = dao.findUserByUsername(username);
 		if(userOpt.isPresent()) {
 			User user = userOpt.get();
 			// 將 password 進行 AES 加密 -------------------------------------------------------------------
-			final String KEY = KeyUtil.getSecretKey();
-			SecretKeySpec aesKeySpec = new SecretKeySpec(KEY.getBytes(), "AES");
-			byte[] encryptedPasswordECB = KeyUtil.encryptWithAESKey(aesKeySpec, password);
-			String encryptedPasswordECBBase64 = Base64.getEncoder().encodeToString(encryptedPasswordECB);
+			final String KEY = KeyUtil.getSecretKey(); 														// 1. 獲取密鑰
+			SecretKeySpec aesKeySpec = new SecretKeySpec(KEY.getBytes(), "AES"); 							// 2. 創建 SecretKeySpec
+			byte[] encryptedPasswordECB = KeyUtil.encryptWithAESKey(aesKeySpec, password); 					// 3. 進行 AES 加密
+			String encryptedPasswordECBBase64 = Base64.getEncoder().encodeToString(encryptedPasswordECB);   // 4. Base64 編碼
 			//-------------------------------------------------------------------------------------------
 			if(user.getPassword().equals(encryptedPasswordECBBase64)) { // 比對加密過後的 password 是否相同
 				session.setAttribute("user", user); // 將 user 物件放入到 session 變數中
@@ -129,12 +171,12 @@ public class GroupBuyController {
 			} else {
 				session.invalidate(); // session 過期失效
 				model.addAttribute("loginMessage", "密碼錯誤");
-				return "group_buy/login";
+				return "group_buy/login"; //導向 login頁面
 			}
 		} else {
 			session.invalidate(); // session 過期失效
 			model.addAttribute("loginMessage", "無此使用者");
-			return "group_buy/login";
+			return "group_buy/login"; //導向 login頁面
 		}
 	}
 	
@@ -144,12 +186,12 @@ public class GroupBuyController {
 						 @RequestParam("password") String password,
 						 @RequestParam("code") String code,
 						HttpSession session, Model model) throws Exception {
-		// 比對驗證碼
-		if(!code.equals(session.getAttribute("code")+"")) {
-			session.invalidate(); // session 過期失效
-			model.addAttribute("loginMessage", "驗證碼錯誤");
-			return "group_buy/login";
-		}
+//		// 比對驗證碼
+//		if(!code.equals(session.getAttribute("code")+"")) {
+//			session.invalidate(); // session 過期失效
+//			model.addAttribute("loginMessage", "驗證碼錯誤");
+//			return "group_buy/login";
+//		}
 		// 根據 username 查找 user 物件
 		Optional<User> userOpt = dao.findUserByUsername(username);
 		if(userOpt.isPresent()) {
@@ -356,12 +398,46 @@ public class GroupBuyController {
 //	}
 	
 	// 密碼變更
-	//@PostMapping("/frontend/change_password")
+//	@PostMapping("/frontend/change_password")
+//	@RequestMapping(value = "/frontend/change_password", method = RequestMethod.POST)
+//	public String changePassword(@RequestParam("oldPassword") String oldPassword, 
+//								 @RequestParam("newPassword") List<String> newPasswords,
+//								 HttpSession session,
+//								 Model model) throws Exception {
+//		System.out.println("/frontend/change_password");
+//		
+//		User user = (User)session.getAttribute("user");
+//		
+//		// 將 password 進行 AES 加密 -------------------------------------------------------------------
+//		final String KEY = KeyUtil.getSecretKey();
+//		SecretKeySpec aesKeySpec = new SecretKeySpec(KEY.getBytes(), "AES");
+//		byte[] encryptedOldPasswordECB = KeyUtil.encryptWithAESKey(aesKeySpec, oldPassword);
+//		String encryptedOldPasswordECBBase64 = Base64.getEncoder().encodeToString(encryptedOldPasswordECB);
+//		//-------------------------------------------------------------------------------------------
+//		
+//		if(!user.getPassword().equals(encryptedOldPasswordECBBase64)) {
+//			model.addAttribute("errorMessage", "原密碼錯誤");
+//			return "group_buy/frontend/profile";
+//		}
+//		if(!newPasswords.get(0).equals(newPasswords.get(1))) {
+//			model.addAttribute("errorMessage", "二次新密碼不一致");
+//			return "group_buy/frontend/profile";
+//		}
+//		// 將新密碼加密
+//		byte[] encryptedNewPasswordECB = KeyUtil.encryptWithAESKey(aesKeySpec, newPasswords.get(0));
+//		String encryptedNewPasswordECBBase64 = Base64.getEncoder().encodeToString(encryptedNewPasswordECB);
+//		// 進行密碼變更
+//		dao.updateUserPassword(user.getUserId(), encryptedNewPasswordECBBase64);
+//		return "redirect:/mvc/group_buy/logout";
+//	}
+	
 	@RequestMapping(value = "/frontend/change_password", method = RequestMethod.POST)
 	public String changePassword(@RequestParam("oldPassword") String oldPassword, 
-								 @RequestParam("newPassword") List<String> newPasswords,
+								 @RequestParam("newPassword") String newPasswords,
+								 @RequestParam("newPassword") String confirmNewPassword,
 								 HttpSession session,
 								 Model model) throws Exception {
+		System.out.println("/frontend/change_password");
 		
 		User user = (User)session.getAttribute("user");
 		
@@ -376,12 +452,16 @@ public class GroupBuyController {
 			model.addAttribute("errorMessage", "原密碼錯誤");
 			return "group_buy/frontend/profile";
 		}
-		if(!newPasswords.get(0).equals(newPasswords.get(1))) {
+//		if(!newPasswords.get(0).equals(newPasswords.get(1))) {
+//			model.addAttribute("errorMessage", "二次新密碼不一致");
+//			return "group_buy/frontend/profile";
+//		}
+		if(!newPasswords.equals(confirmNewPassword)) {
 			model.addAttribute("errorMessage", "二次新密碼不一致");
 			return "group_buy/frontend/profile";
 		}
 		// 將新密碼加密
-		byte[] encryptedNewPasswordECB = KeyUtil.encryptWithAESKey(aesKeySpec, newPasswords.get(0));
+		byte[] encryptedNewPasswordECB = KeyUtil.encryptWithAESKey(aesKeySpec, newPasswords);
 		String encryptedNewPasswordECBBase64 = Base64.getEncoder().encodeToString(encryptedNewPasswordECB);
 		// 進行密碼變更
 		dao.updateUserPassword(user.getUserId(), encryptedNewPasswordECBBase64);
@@ -475,4 +555,53 @@ public class GroupBuyController {
         model.addAttribute("checkoutCarts",checkoutCarts);	
         return "group_buy/frontend/profile";
 	}
+
+
+//	 導出功能
+	@GetMapping("/getOrderHistoryCsv")
+	public ResponseEntity<byte[]> getOrderHistoryCsv(HttpSession session) {
+	    User sessionUser = (User) session.getAttribute("user");
+	User user = dao.findUserById(sessionUser.getUserId()).get();
+//	List<Cart> carts = dao.findCartsByUserId(user.getUserId());
+//	List<Cart> orderHistorys = carts.stream()
+//	        .filter(cart -> cart.getIsCheckout() != null && cart.getIsCheckout())
+//	        .collect(Collectors.toList());
+	List<Cart> checkoutCarts =dao.findCartsbyUserIdAndCheckoutStatus(user.getUserId(), true);
+
+	try {
+	    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+	    CSVWriter writer = new CSVWriter(new OutputStreamWriter(stream));
+	    String[] header = { "Item"," Product Name" ," Price","Unit" ,"Quantity" , "Total Price" };
+	    writer.writeNext(header);
+//	    for (Cart cart : checkoutCarts) {
+//	        String[] data = { String.valueOf(cart.getCartId()),cart.getUserId().toString(),cart.getCartItems().toString(), cart.getCheckoutTime().toString() };
+//	        writer.writeNext(data);
+//	    }
+        for (Cart cart : checkoutCarts) { //使用 checkoutCarts 遍歷了每個 Cart對象
+        	for(CartItem item:cart.getCartItems()) { //再使用第二個 c:forEach 遍歷了其中的 cartItems
+        		String[] data = {
+        			    Integer.toString(item.getItemId()),
+        			    item.getProduct().getProductName(),
+        			    Double.toString(item.getProduct().getPrice()),  // Assuming price is of type double
+        			    item.getProduct().getUnit(),
+        			    Integer.toString(item.getQuantity()),
+        			    Double.toString(item.getProduct().getPrice() * item.getQuantity())
+        			};
+
+                writer.writeNext(data);
+        	}
+        }
+	    writer.close();
+	    byte[] bytes = stream.toByteArray();
+	
+	    HttpHeaders headers = new HttpHeaders();
+	    headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename = order_history.csv");
+	
+	        return new ResponseEntity<>(bytes, headers, HttpStatus.OK);
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	    }
+	}
+	
 }

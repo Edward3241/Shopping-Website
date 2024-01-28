@@ -294,9 +294,40 @@ public class GroupBuyDaoMySQL implements GroupBuyDao {
 		});
 		cart.setCartItems(cartItems);
 	}
-	
-	
 
+//	// 17. Github
+//	@Override
+//	public Optional<User> findByUsername(String username) {
+//		 try {
+//	            String sql = "select userId, username, password, level, authType, authId from user where username = ?";
+//	            User user = jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(User.class), username);
+//	            enrichUserWithServices(user);
+//	            return Optional.ofNullable(user);
+//	        } catch (EmptyResultDataAccessException e) {
+//	            return Optional.empty();
+//	        }
+//	    }
+//
+//	// Helper method to enrich user with services
+//    private void enrichUserWithServices(User user) {
+//        String sql = "select s.serviceId, s.serviceLocation, s.serviceName, s.serviceUrl "
+//                   + "from level_ref_service r "
+//                   + "left join service s on s.serviceId = r.serviceId "
+//                   + "where r.levelId = ? order by r.sort";
+//        List<Service> services = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Service.class), user.getLevel());
+//        user.setServices(services);
+//    }
+	
+	// 16. 導出功能
+//		@Override
+//	    public List<Cart> getOrderHistory(User user) {
+//	        String queryStr = "SELECT c FROM Cart c WHERE c.user = :user AND c.isCheckout = true";
+//	        TypedQuery<Cart> query = entityManager.createQuery(queryStr, Cart.class);
+//	        query.setParameter("user", user);
+//	        return query.getResultList();
+//	    }	
+		
+	
 
 
 }

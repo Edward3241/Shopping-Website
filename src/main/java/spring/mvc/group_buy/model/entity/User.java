@@ -111,6 +111,13 @@ public class User {
 	public void setProfile(Profile profile) {
 		this.profile = profile;
 	}
+
+	@Override
+	public String toString() {
+		return "User [userId=" + userId + ", username=" + username + ", password=" + password + ", level=" + level
+				+ ", authType=" + authType + ", authId=" + authId + ", profile=" + profile + ", services=" + services
+				+ "]";
+	}
 	
 	
 	

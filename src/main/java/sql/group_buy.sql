@@ -1,197 +1,256 @@
-/*
+CREATE DATABASE  IF NOT EXISTS `group_buy` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `group_buy`;
+-- MySQL dump 10.13  Distrib 8.0.34, for Win64 (x86_64)
+--
+-- Host: 127.0.0.1    Database: group_buy
+-- ------------------------------------------------------
+-- Server version	8.0.35
 
-1. 商品
-Pack(盒), Box(箱), Bottle(瓶), Bag(包), Dozen(打)
-+-----------+-------------+-------+--------+----------+
-| productId | productName | price |  unit  | isLaunch |
-+-----------+-------------+-------+--------+----------+
-|    501    |   Coffee    |  300  |  Pack  |   true   |
-|    502    |  Green Tea  |  150  |  Box   |   false  |
-|    503    |   Honey     |  200  | Bottle |   false  |
-|    504    |   Sugar     |  100  |  Bag   |   true   |
-|    505    |   Milk      |  450  |  Dozen |   true   |
-+-----------+-------------+-------+--------+----------+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-2. 使用者
-level: 1(一般會員-進行團購), 2(後臺維運人員-進行團購+上架商品)
-+--------+----------+----------+-------+----------+--------+
-| userId | username | password | level | authType | authId |
-+--------+----------+----------+-------+----------+--------+
-|  101   | user123  | pass123  |   1   |          |        | 
-|  102   | user456  | pass456  |   2   |          |        | 
-|  103   | user789  | pass789  |   1   |          |        | 
-|  104   | gitUser  | None     |   1   |  github  | 123456 |
-+--------+----------+----------+-------+----------+--------+
+--
+-- Table structure for table `cart`
+--
 
-3. 購物車主檔(Master)
-+--------+----------+-----------+------------+--------------+
-| cartId |  userId  | cartItems | isCheckout | checkoutTime |
-+--------+----------+-----------+------------+--------------+
-|  201   |   101    | [1, 2]    |    true    | /-/-/  0:0:0 |
-|  202   |   102    | [3]       |    false   |              |
-|  203   |   103    | [4, 5]    |    true    | /-/-/  0:0:0 |
-|  204   |   103    | []        |    false   |              |
-|  205   |   101    | [6]       |    true    | /-/-/  0:0:0 |
-+--------+----------+-----------+------------+--------------+
+DROP TABLE IF EXISTS `cart`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `cart` (
+  `cartId` int NOT NULL AUTO_INCREMENT,
+  `userId` int NOT NULL,
+  `isCheckout` tinyint(1) DEFAULT '0',
+  `checkoutTime` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`cartId`),
+  KEY `userId` (`userId`),
+  CONSTRAINT `cart_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `user` (`userId`)
+) ENGINE=InnoDB AUTO_INCREMENT=211 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-ps: cartItems 一對多關聯
+--
+-- Dumping data for table `cart`
+--
 
-4. 購物車明細檔(Detail)
-+--------+----------+-----------+------------+
-| itemId |  cartId  | productId |  quantity  |
-+--------+----------+-----------+------------+
-|   1    |   201    |    501    |     10     |
-|   2    |   201    |    502    |     8      |
-|   3    |   202    |    503    |     5      |
-|   4    |   203    |    502    |     8      |
-|   5    |   203    |    504    |     20     |
-|   6    |   205    |    505    |     15     |
-+--------+----------+-----------+------------+
+LOCK TABLES `cart` WRITE;
+/*!40000 ALTER TABLE `cart` DISABLE KEYS */;
+INSERT INTO `cart` VALUES (201,101,1,'2024-01-21 16:48:42'),(202,102,0,NULL),(203,103,1,'2024-01-21 16:48:42'),(204,103,0,NULL),(205,101,1,'2024-01-21 16:48:42'),(206,101,1,'2024-01-21 17:40:02'),(207,101,1,'2024-01-21 17:41:50'),(208,101,1,'2024-01-22 08:34:42'),(209,101,1,'2024-01-23 08:43:17'),(210,101,1,'2024-01-26 08:13:27');
+/*!40000 ALTER TABLE `cart` ENABLE KEYS */;
+UNLOCK TABLES;
 
-資料庫的建立: CREATE SCHEMA `group_buy` DEFAULT CHARACTER SET utf8mb4 ;
+--
+-- Table structure for table `cartitem`
+--
 
- * */
--- 授權資料表
-drop table if exists level_ref_service;
-drop table if exists service;
-drop table if exists level;
+DROP TABLE IF EXISTS `cartitem`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `cartitem` (
+  `itemId` int NOT NULL AUTO_INCREMENT,
+  `cartId` int NOT NULL,
+  `productId` int NOT NULL,
+  `quantity` int DEFAULT '0',
+  PRIMARY KEY (`itemId`),
+  KEY `cartId` (`cartId`),
+  KEY `cartitem_ibfk_2` (`productId`),
+  CONSTRAINT `cartitem_ibfk_1` FOREIGN KEY (`cartId`) REFERENCES `cart` (`cartId`),
+  CONSTRAINT `cartitem_ibfk_2` FOREIGN KEY (`productId`) REFERENCES `product` (`productId`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-drop table if exists cartitem;
-drop table if exists cart;
-drop table if exists user;
-drop table if exists product;
+--
+-- Dumping data for table `cartitem`
+--
 
--- 建立 Service table
-create table if not exists service(
-    serviceId int primary key,
-    serviceLocation varchar(50),
-    serviceName varchar(50),
-    serviceUrl varchar(50)
-);
+LOCK TABLES `cartitem` WRITE;
+/*!40000 ALTER TABLE `cartitem` DISABLE KEYS */;
+INSERT INTO `cartitem` VALUES (1,201,501,10),(5,203,504,20),(6,205,505,15),(7,206,505,1),(8,207,503,1),(9,208,501,2),(10,209,505,2),(11,210,505,2);
+/*!40000 ALTER TABLE `cartitem` ENABLE KEYS */;
+UNLOCK TABLES;
 
--- 建立 Level
-create table if not exists level(
-    levelId int primary key,
-    levelName varchar(50)
-);
+--
+-- Table structure for table `level`
+--
 
--- 建立 Service 與 Level 之間的關聯表 table
-create table if not exists level_ref_service(
-    levelId int not null,
-    serviceId int not null,
-    sort int default 1,
-    foreign key (levelId) references level(levelId),
-    foreign key (serviceId) references service(serviceId),
-    constraint unique_sid_and_aid UNIQUE(levelId, serviceId)
-);
+DROP TABLE IF EXISTS `level`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `level` (
+  `levelId` int NOT NULL,
+  `levelName` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`levelId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
+--
+-- Dumping data for table `level`
+--
 
--- 建立 Product
-create table if not exists product(
-	productId int auto_increment primary key,
-    productName varchar(50) not null,
-    price decimal(10, 2),
-    unit varchar(10),
-    isLaunch boolean
-);
--- 設置 AUTO_INCREMENT = 501
-alter table product auto_increment = 501;
+LOCK TABLES `level` WRITE;
+/*!40000 ALTER TABLE `level` DISABLE KEYS */;
+INSERT INTO `level` VALUES (1,'一般客戶'),(2,'內部員工');
+/*!40000 ALTER TABLE `level` ENABLE KEYS */;
+UNLOCK TABLES;
 
--- 建立 User
-create table if not exists user(
-	userId int auto_increment primary key,
-    username varchar(50) not null,
-    password varchar(50) not null,
-    level int,
-    authType enum('local', 'github', 'google') default 'local',
-    authId varchar(100)
-);
--- 設置 AUTO_INCREMENT = 101
-alter table user auto_increment = 101;
+--
+-- Table structure for table `level_ref_service`
+--
 
--- 建立 Cart 購物車主檔
-create table if not exists cart(
-	cartId int auto_increment primary key,
-    userId int not null, 
-    isCheckout boolean default false,
-    checkoutTime datetime default current_timestamp,
-    foreign key (userId) references user(userId)
-);
--- 設置 AUTO_INCREMENT = 201
-alter table cart auto_increment = 201;
+DROP TABLE IF EXISTS `level_ref_service`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `level_ref_service` (
+  `levelId` int NOT NULL,
+  `serviceId` int NOT NULL,
+  `sort` int DEFAULT '1',
+  UNIQUE KEY `unique_sid_and_aid` (`levelId`,`serviceId`),
+  KEY `serviceId` (`serviceId`),
+  CONSTRAINT `level_ref_service_ibfk_1` FOREIGN KEY (`levelId`) REFERENCES `level` (`levelId`),
+  CONSTRAINT `level_ref_service_ibfk_2` FOREIGN KEY (`serviceId`) REFERENCES `service` (`serviceId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- 建立 CartItem 購物車明細檔
-create table if not exists cartitem(
-	itemId int auto_increment primary key,
-    cartId int not null,
-    productId int not null,
-    quantity int default 0,
-    foreign key (cartId) references cart(cartId),
-    foreign key (productId) references product(productId)
-);
--- 設置 AUTO_INCREMENT = 1
-alter table cartitem auto_increment = 1;
+--
+-- Dumping data for table `level_ref_service`
+--
 
--- 預設資料
-insert into service (serviceId, serviceLocation, serviceName, serviceUrl) values(1, 'frontend', '團購首頁', '/mvc/group_buy/frontend/main');
-insert into service (serviceId, serviceLocation, serviceName, serviceUrl) values(2, 'frontend', '🛒 購物車', '/mvc/group_buy/frontend/cart');
-insert into service (serviceId, serviceLocation, serviceName, serviceUrl) values(3, 'frontend', '🔞 登出', '/mvc/group_buy/logout');
-insert into service (serviceId, serviceLocation, serviceName, serviceUrl) values(4, 'frontend', '👼 Profile', '/mvc/group_buy/frontend/profile');
-insert into service (serviceId, serviceLocation, serviceName, serviceUrl) values(51, 'backend', '後台報告', '/mvc/group_buy/backend/report');
-insert into service (serviceId, serviceLocation, serviceName, serviceUrl) values(52, 'backend', '商品新增', '/mvc/group_buy/backend/main');
+LOCK TABLES `level_ref_service` WRITE;
+/*!40000 ALTER TABLE `level_ref_service` DISABLE KEYS */;
+INSERT INTO `level_ref_service` VALUES (1,1,1),(1,2,3),(1,3,5),(1,4,4),(1,5,2),(2,1,1),(2,2,2),(2,3,6),(2,4,7),(2,51,3),(2,52,4),(2,53,5);
+/*!40000 ALTER TABLE `level_ref_service` ENABLE KEYS */;
+UNLOCK TABLES;
 
-insert into level(levelId, levelName) values(1, '一般客戶');
-insert into level(levelId, levelName) values(2, '內部員工');
+--
+-- Table structure for table `product`
+--
 
-insert into level_ref_service(levelId, serviceId, sort) values(1, 1, 1);
-insert into level_ref_service(levelId, serviceId, sort) values(1, 2, 2);
-insert into level_ref_service(levelId, serviceId, sort) values(1, 3, 4);
-insert into level_ref_service(levelId, serviceId, sort) values(1, 4, 3);
-insert into level_ref_service(levelId, serviceId, sort) values(2, 1, 1);
-insert into level_ref_service(levelId, serviceId, sort) values(2, 2, 2);
-insert into level_ref_service(levelId, serviceId, sort) values(2, 3, 6);
-insert into level_ref_service(levelId, serviceId, sort) values(2, 4, 5);
-insert into level_ref_service(levelId, serviceId, sort) values(2, 51, 3);
-insert into level_ref_service(levelId, serviceId, sort) values(2, 52, 4);
+DROP TABLE IF EXISTS `product`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `product` (
+  `productId` int NOT NULL AUTO_INCREMENT,
+  `productName` varchar(50) NOT NULL,
+  `price` decimal(10,2) DEFAULT NULL,
+  `unit` varchar(10) DEFAULT NULL,
+  `isLaunch` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`productId`)
+) ENGINE=InnoDB AUTO_INCREMENT=511 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-INSERT INTO product (productId, productName, price, unit, isLaunch) VALUES
-(501, 'Coffee', 300.00, 'Pack', true),
-(502, 'Green Tea', 150.00, 'Box', false),
-(503, 'Honey', 200.00, 'Bottle', false),
-(504, 'Sugar', 100.00, 'Bag', true),
-(505, 'Milk', 450.00, 'Dozen', true);
+--
+-- Dumping data for table `product`
+--
 
--- password 已透過 AES 進行加密
--- KEY = 0123456789abcdef0123456789abcdef
-INSERT INTO user (userId, username, password, level) VALUES
-(101, 'user123', 'JqKLj+4Aw3DnndH0MHUQkg==', 1),
-(102, 'user456', 'ormIciIAHZjZjQYphMuCHQ==', 2),
-(103, 'user789', 'Nj8ZE1H01l0cDeX/GskzXg==', 1);
+LOCK TABLES `product` WRITE;
+/*!40000 ALTER TABLE `product` DISABLE KEYS */;
+INSERT INTO `product` VALUES (501,'Beer',300.00,'Pack',0),(503,'Dress',600.00,'Clothing',0),(504,'Car',900000.00,'Set',0),(505,'Phone',25000.00,'Set',0);
+/*!40000 ALTER TABLE `product` ENABLE KEYS */;
+UNLOCK TABLES;
 
-INSERT INTO cart (cartId, userId, isCheckout, checkoutTime) VALUES
-(201, 101, true, current_timestamp),
-(202, 102, false, NULL),
-(203, 103, true, current_timestamp),
-(204, 103, false, NULL),
-(205, 101, true, current_timestamp);
+--
+-- Table structure for table `service`
+--
 
-INSERT INTO cartitem (itemId, cartId, productId, quantity) VALUES
-(1, 201, 501, 10),
-(2, 201, 502, 8),
-(3, 202, 503, 5),
-(4, 203, 502, 8),
-(5, 203, 504, 20),
-(6, 205, 505, 15);
+DROP TABLE IF EXISTS `service`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `service` (
+  `serviceId` int NOT NULL,
+  `serviceLocation` varchar(50) DEFAULT NULL,
+  `serviceName` varchar(50) DEFAULT NULL,
+  `serviceUrl` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`serviceId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- 每個使用者的總消費金額
--- 建立View
-/*
-create view UserTotalAmountView as
-select u.userId, u.username,coalesce(sum(p.price*ci.quantity),0) as total
-from user u
-left join cart c on u.userId = c.userId
-left join cartitem ci on c.cartId= ci.cartId
-left join product p on ci.productId = p.productId
-where c.isCheckout = true
-group by u.userId, u.username
-*/
+--
+-- Dumping data for table `service`
+--
+
+LOCK TABLES `service` WRITE;
+/*!40000 ALTER TABLE `service` DISABLE KEYS */;
+INSERT INTO `service` VALUES (1,'frontend','✋團購首頁','/mvc/group_buy/frontend/main'),(2,'frontend','? 購物車','/mvc/group_buy/frontend/cart'),(3,'frontend','? 登出','/mvc/group_buy/logout'),(4,'frontend','? Profile','/mvc/group_buy/frontend/profile'),(5,'frontend','?商品頁面','/mvc/group_buy/frontend/product'),(51,'backend','?後台報告','/mvc/group_buy/backend/report'),(52,'backend','➕商品新增','/mvc/group_buy/backend/main'),(53,'backend','➖商品刪除','/mvc/group_buy/backend/delete');
+/*!40000 ALTER TABLE `service` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `user`
+--
+
+DROP TABLE IF EXISTS `user`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `user` (
+  `userId` int NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL,
+  `password` varchar(50) NOT NULL,
+  `level` int DEFAULT NULL,
+  `authType` enum('local','github','google') DEFAULT 'local',
+  `authId` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`userId`)
+) ENGINE=InnoDB AUTO_INCREMENT=105 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `user`
+--
+
+LOCK TABLES `user` WRITE;
+/*!40000 ALTER TABLE `user` DISABLE KEYS */;
+INSERT INTO `user` VALUES (101,'user123','JqKLj+4Aw3DnndH0MHUQkg==',1,'local',NULL),(102,'user456','ormIciIAHZjZjQYphMuCHQ==',2,'local',NULL),(103,'user789','Nj8ZE1H01l0cDeX/GskzXg==',1,'local',NULL),(104,'Edward3241','None',1,'github','132114665');
+/*!40000 ALTER TABLE `user` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Temporary view structure for view `usertotalamountview`
+--
+
+DROP TABLE IF EXISTS `usertotalamountview`;
+/*!50001 DROP VIEW IF EXISTS `usertotalamountview`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `usertotalamountview` AS SELECT 
+ 1 AS `userId`,
+ 1 AS `username`,
+ 1 AS `total`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Dumping events for database 'group_buy'
+--
+
+--
+-- Final view structure for view `usertotalamountview`
+--
+
+/*!50001 DROP VIEW IF EXISTS `usertotalamountview`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`web`@`%` SQL SECURITY DEFINER */
+/*!50001 VIEW `usertotalamountview` AS select `u`.`userId` AS `userId`,`u`.`username` AS `username`,coalesce(sum((`p`.`price` * `ci`.`quantity`)),0) AS `total` from (((`user` `u` left join `cart` `c` on((`u`.`userId` = `c`.`userId`))) left join `cartitem` `ci` on((`c`.`cartId` = `ci`.`cartId`))) left join `product` `p` on((`ci`.`productId` = `p`.`productId`))) where (`c`.`isCheckout` = true) group by `u`.`userId`,`u`.`username` */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2024-01-26  9:43:29

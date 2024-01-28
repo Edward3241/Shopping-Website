@@ -7,8 +7,8 @@
 		<meta charset="UTF-8">
 		<title>團購網首頁</title>
 		<!-- slider css-->
-    <link rel="stylesheet" type="text/css" href="/GroupBuy/node_modules/slick-master/slick/slick.css" />
-    <link rel="stylesheet" type="text/css" href="/GroupBuy/node_modules/slick-master/slick/slick-theme.css" />
+    <link rel="stylesheet" type="text/css" href="/GroupBuy2/node_modules/slick-master/slick/slick.css" />
+    <link rel="stylesheet" type="text/css" href="/GroupBuy2/node_modules/slick-master/slick/slick-theme.css" />
     <%@include file="../header.jspf" %>
     
 	</head>
@@ -23,14 +23,14 @@
 		  <div class="carousel-inner">
 		    <div class="carousel-item active">
 				<div class="d-flex justify-content-center">
-		      	<img src="https://media.karousell.com/media/photos/special-collection/2023/11/20/9dc19b0e612a8cff_(1500,610)" class="d-block mx-auto w-50" alt="...">      	
-		      	<img src="https://media.karousell.com/media/photos/special-collection/2023/03/20/d44f19ee73039476_(1500,610)" class="d-block mx-auto w-50" alt="...">
+		      	<img src="https://media.karousell.com/media/photos/special-collection/2024/01/17/90572652ac224d03_(1500,610)" class="d-block mx-auto w-50" alt="...">      	
+		      	<img src="https://media.karousell.com/media/photos/special-collection/2023/07/25/cb1a08dae29c96da_(1500,610)" class="d-block mx-auto w-50" alt="...">
 		    	</div>
 		    </div>
 		    <div class="carousel-item">
 		    	<div class="d-flex justify-content-center">
-		      	<img src="https://media.karousell.com/media/photos/special-collection/2023/10/16/40366c562bdb5174_(1500,610)" class="d-block mx-auto w-50" alt="...">
-		      	<img src="https://media.karousell.com/media/photos/special-collection/2023/12/07/d41e918db6e9e532_(1500,610)" class="d-block mx-auto w-50" alt="...">
+		      	<img src="https://media.karousell.com/media/photos/special-collection/2024/01/12/2c800db9341f43f8_(1500,610)" class="d-block mx-auto w-50" alt="...">
+		      	<img src="https://media.karousell.com/media/photos/special-collection/2024/01/18/635e70f3702f4560_(1500,610)" class="d-block mx-auto w-50" alt="...">
 		    	</div>
 		    </div>
 		  </div>
@@ -193,7 +193,7 @@
       
 	 <!-- slider js-->
     <%@include file="../body.jspf" %>
-    <script type="text/javascript" src="/GroupBuy/node_modules/slick-master/slick/slick.min.js"></script>
+    <script type="text/javascript" src="/GroupBuy2/node_modules/slick-master/slick/slick.min.js"></script>
     
     
     

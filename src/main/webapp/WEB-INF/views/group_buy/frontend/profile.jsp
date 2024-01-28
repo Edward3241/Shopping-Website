@@ -39,13 +39,13 @@
 				</fieldset>
 			</form>
 			
-			<hr class="separator">
-			
-			<!-- 訂單查詢連結 -->
-			<a href="./orders" class="btn btn-secondary">訂單查詢</a>
-			
+			<hr class="separator">					
 			<!-- 導出按鈕 -->
-			<button type="button" class="btn btn-success" onclick="exportOrders()">導出訂單</button>
+			<form id="downloadForm" action="${pageContext.request.contextPath}/mvc/group_buy/getOrderHistoryCsv" method="get">
+		    <button type="button" class="btn btn-success w-10" onclick="downloadCsv()">導出訂單</button>
+			</form>
+
+
 
 			<!-- 訂單查詢結果表格 -->	
 			<h2>訂單查詢結果</h2>
@@ -77,6 +77,7 @@
 			        </tbody>
 			    </table>
 			</div>
+			
 
 			<!-- 使用 CDN 引入 jQuery 和 Bootstrap 的 JavaScript -->
 			<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
@@ -84,10 +85,13 @@
 
 			<!-- 導出功能 -->
 			<script>
-				function exportOrders() {
-					// 此處填入導出訂單的 JavaScript 邏輯
-					// ...
-				}
+			function downloadCsv() {
+		        // 获取表单元素
+		        var form = document.getElementById("downloadForm");
+
+		        // 提交表单，实现重定向
+		        form.submit();
+		    }
 			</script>
 		</div>
 	</body>

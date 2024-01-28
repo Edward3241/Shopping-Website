@@ -2,10 +2,11 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>GroupBuy</groupId>
-	<artifactId>GroupBuy</artifactId>
+	<groupId>GroupBuy2</groupId>
+	<artifactId>GroupBuy2</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
+	
 
 	<properties>
 		<endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
@@ -15,6 +16,13 @@
 	</properties>
 
 	<dependencies>
+		
+		  <dependency>
+		   <groupId>com.opencsv</groupId>
+		   <artifactId>opencsv</artifactId>
+		   <version>5.5.2</version>
+		  </dependency>
+	     
 
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
@@ -36,13 +44,18 @@
 			<version>5.3.1</version>
 			<scope>test</scope>
 		</dependency>
-
+		
+		
 		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-web-api</artifactId>
 			<version>8.0.1</version>
 			<scope>provided</scope>
 		</dependency>
+		
+		
+	
+
 
 		<!-- https://financequotes-api.com/ -->
 		<dependency>

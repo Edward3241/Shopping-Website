@@ -11,9 +11,11 @@ public class OAuth2Util {
 	// GitHub OAuth 2.0 的客戶端 ID 和密鑰。這些應該在 GitHub 設置中生成。
 	// 我們的應用程序的回調 URL(REDIRECT_URI)，這應該與在 GitHub 設置中的回調 URL 相匹配。
 	
-	public final static String CLIENT_ID = "f377fab5e67e768e1f70";
-    private final static String CLIENT_SECRET = "dc6cdcff7cdb9fa7576a911a312f1b4d22d1bb7f";	
-    public final static String REDIRECT_URI = "https://localhost:8443/GroupBuy/mvc/secure/oauth2/callback/github";
+//	public final static String CLIENT_ID = "f377fab5e67e768e1f70";
+//    private final static String CLIENT_SECRET = "dc6cdcff7cdb9fa7576a911a312f1b4d22d1bb7f";	
+    public final static String CLIENT_ID = "6f5f8c9e5219439760a8";
+    private final static String CLIENT_SECRET = "a3de6e02ed15ee909af3c3a9c040e356f4165408";	
+    public final static String REDIRECT_URI = "http://localhost:8080/GroupBuy2/mvc/secure/oauth2/callback/github";
 	
     //  GitHub 的 OAuth 2.0 授權端點 (Authorization Endpoint)
     //  用戶同意，GitHub 會將他們重定向回應用程序指定的 redirect_uri，並附帶一個授權碼（code）作為參數。

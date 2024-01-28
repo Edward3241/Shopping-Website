@@ -5,7 +5,8 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>團購網-新增結果</title>
-		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet"  crossorigin="anonymous">    
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet"  crossorigin="anonymous">
+		<%@include file="../header.jspf" %>	
 	</head>
 	<body>
 		<!-- menu -->
@@ -24,6 +25,6 @@
 		 <!-- 使用 CDN 引入 jQuery 和 Bootstrap 的 JavaScript -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js"  crossorigin="anonymous"></script>	
-		
+	<%@include file="../body.jspf" %>	
 	</body>
 </html>
