@@ -5,7 +5,7 @@ System structure
 2. Controller去分派網址, dao去資料庫做增刪查改 傳回來的資料返回到Controller 
 3. Controller把資料用model的方式送到jsp, jsp 美化之後再送回使用者端
    
-其他工具
+Other Tools
 1. Aop: 追蹤應用程序的執行流程
 2. 使用第三方登入Github login
 3. 前端工具 HTML,CSS,JS
